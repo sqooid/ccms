@@ -1,8 +1,4 @@
-export enum DbErrorType {
-	MISSING,
-	MISC,
-	DUPLICATE
-}
+type DbErrorType = 'noBinding' | 'duplicate' | 'misc';
 export class DbError extends Error {
 	type: DbErrorType;
 	constructor(type: DbErrorType, msg: string) {
@@ -10,13 +6,3 @@ export class DbError extends Error {
 		this.type = type;
 	}
 }
-
-export type User = {
-	id: number; // db use
-	uuid: string; // url use
-	username: string; // identification
-	bcrypt: string;
-	role: number;
-	createdOn: number;
-	updatedOn: number;
-};

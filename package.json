@@ -5,6 +5,8 @@
 	"scripts": {
 		"start:wrangler": "wrangler pages dev .svelte-kit/cloudflare --live-reload",
 		"start:watch": "vite build -w",
+		"drizzle:migrate": "drizzle-kit generate && drizzle-kit migrate",
+		"drizzle:push": "drizzle-kit generate && wrangler d1 migrations apply ccms-dev --local",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -15,6 +17,7 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
+		"@auth/core": "^0.34.2",
 		"@cloudflare/workers-types": "^4.20240821.1",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/adapter-cloudflare": "^4.7.2",
@@ -22,6 +25,8 @@
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/eslint": "^9.6.0",
 		"@types/uuid": "^10.0.0",
+		"dotenv": "^16.4.5",
+		"drizzle-kit": "^0.24.0",
 		"eslint": "^9.0.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.36.0",
@@ -38,7 +43,9 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@auth/drizzle-adapter": "^1.4.2",
 		"@auth/sveltekit": "^1.4.2",
+		"drizzle-orm": "^0.33.0",
 		"pino": "^9.3.2",
 		"uuid": "^10.0.0"
 	}

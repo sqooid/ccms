@@ -1,51 +1,18 @@
-import { isUniqueConstraintError } from './errors';
-import { DbError, DbErrorType, type User } from './types';
-import { v4 as uuidv4 } from 'uuid';
+import { drizzle } from 'drizzle-orm/d1';
+import { DbError } from './types';
+import { users } from './schema';
 
 type Platform = Readonly<App.Platform> | undefined;
 const getDbThrowIfMissing = (platform: Platform) => {
 	const db = platform?.env?.DB;
 	if (!db) {
-		throw new DbError(DbErrorType.MISSING, 'DB binding is missing');
+		throw new DbError('noBinding', 'DB binding is missing');
 	}
-	return db;
+	return drizzle(db, { schema: { users } });
 };
 
-export const getUser = async (platform: Platform, uuid: string) => {
+export const getUser = async (platform: Platform, id: string) => {
 	const db = getDbThrowIfMissing(platform);
-	const user = await db.prepare('select * from Users where uuid=?1').bind(uuid).first<User>();
+	const user = await db.query.users.findFirst({ with: { id } });
 	return user;
-};
-
-export const createUser = async (
-	platform: Platform,
-	userCreateArgs: { username: string; bcrypt: string; role: number }
-) => {
-	const db = getDbThrowIfMissing(platform);
-	const newUser = {
-		username: userCreateArgs.username,
-		bcrypt: userCreateArgs.bcrypt,
-		role: userCreateArgs.role,
-		createdOn: Date.now(),
-		updatedOn: Date.now(),
-		uuid: uuidv4()
-	};
-	try {
-		const result = await db
-			.prepare(
-				'insert into Users (username, bcrypt, role, createdOn, updatedOn, uuid) values (?1, ?2, ?3, ?4, ?5, ?6)'
-			)
-			.bind(...Object.values(newUser))
-			.run<User>();
-
-		if (!result.success) {
-			throw new DbError(DbErrorType.MISC, '');
-		}
-		return newUser.uuid;
-	} catch (e: any) {
-		if (isUniqueConstraintError(e)) {
-			throw new DbError(DbErrorType.DUPLICATE, 'Username already exists');
-		}
-		throw new DbError(DbErrorType.MISC, '');
-	}
 };

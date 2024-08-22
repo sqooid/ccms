@@ -1,38 +1,32 @@
-# create-svelte
+# CCMS - Cloudflare pages CMS
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+## Development
 
-## Creating a project
+To start the dev server such that wrangler such that D1 bindings are emulated locally, in two separate terminals run:
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
+```sh
+pnpm start:watch
 ```
 
-## Developing
+and
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```sh
+pnpm start:wrangler
 ```
 
-## Building
+To set up the local development D1 instance, run:
 
-To create a production version of your app:
-
-```bash
-npm run build
+```sh
+pnpm drizzle:push
 ```
 
-You can preview the production build with `npm run preview`.
+## Deployment to CF pages
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+### Environment variables
+
+Set values for all the variables shown in `.dev.vars`.
+Then so that the production D1 instance schema is always up-to-date, include `pnpm drizzle:migrate` in the build command, e.g.:
+
+```sh
+npm i -g pnpm && pnpm drizzle:migrate && pnpm build
+```
